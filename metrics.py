@@ -13,7 +13,7 @@ def SSIM(rec, ref):
     return ssim
 
 
-def pSNR(rec, ref):
+def PSNR(rec, ref):
     """
     Get pSNR metrics for a reconstruction / reference pair of slices
     """
@@ -22,14 +22,6 @@ def pSNR(rec, ref):
 
     return psnr
 
-def nRMSE(rec, ref):
-    '''
-    Get normalized roort mean squared error map for a reconstruction / reference pair of slices
-
-    '''
-    numerator = np.abs(ref - rec)
-    denominator = np.mean(np.abs(ref))
-    return numerator / denominator
 
 def phase_metric(rec, ref, return_map=False):
     map = np.abs(np.angle(np.conjugate(rec) * ref))
@@ -39,8 +31,9 @@ def phase_metric(rec, ref, return_map=False):
     else:
         return np.average(map, weights=weights)
     
-def mae(rec, ref, return_map=False):
-    map = np.abs(rec - ref)
+    
+def NAE(rec, ref, return_map=False):
+    map = np.abs(np.abs(rec) - np.abs(ref)) / np.mean(np.abs(ref)) * 10
     if return_map:
         return map 
     else:

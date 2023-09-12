@@ -23,11 +23,3 @@ def load_checkpoint(checkpoint_fpath, model, optimizer):
     model.load_state_dict(checkpoint['model_state_dict'])
     optimizer.load_state_dict(checkpoint['optimizer_state_dict'])
     return model, optimizer, checkpoint['epoch'], checkpoint['best_loss']
-
-def wandb_scale_img(data:np.ndarray) -> np.ndarray:
-    """ Scales float data to a range of 0, 1
-    """
-    d_max = np.max(data)
-    d_min = np.min(data)
-    data = (data - d_min) / (d_max - d_min)
-    return data
