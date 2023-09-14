@@ -18,6 +18,7 @@ class EarlyStopper:
                 return True
         return False
     
+    
 def load_checkpoint(checkpoint_fpath, model, optimizer):
     checkpoint = torch.load(checkpoint_fpath)
     model.load_state_dict(checkpoint['model_state_dict'])

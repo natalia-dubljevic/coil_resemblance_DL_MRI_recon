@@ -13,6 +13,27 @@ from dataset import SliceDataset, ReImgChannels
 from training_utils import EarlyStopper
 
 
+'''
+Example arguments:
+
+smap = 'circle_R_9'
+smap_style = 'circle_ring'
+coils = 8
+epochs = 200
+
+version = 'circle_R_9_final'
+blocks = 5
+block_depth = 5
+filters = 80
+
+smap_layers = 12
+smap_filters = 50
+
+batch_size = 32
+lr = 0.001
+stopper_patience = 10
+'''
+
 # get system arguments
 smap, smap_style, coils, epochs = sys.argv[1], sys.argv[2], int(sys.argv[3]), int(sys.argv[4])
 version, blocks, block_depth, filters= sys.argv[5], int(sys.argv[6]), int(sys.argv[7]), int(sys.argv[8])
