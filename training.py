@@ -53,7 +53,7 @@ folder_path = '/home/pasala/Data/12-channel/'
 
 slice_ids = pd.read_csv(folder_path + 'slice_ids_v2.csv')
 slice_ids = slice_ids.loc[((slice_ids['slice'] >= 55) 
-                            & (slice_ids['slice'] <= 201)), :]  # remove first and last 55 for training
+                            & (slice_ids['slice'] <= 200)), :]  # remove first and last 55 for training
 slice_ids_val = slice_ids.loc[((slice_ids['slice'] >= 77) 
                                & (slice_ids['slice'] < 178)), :] # keep only central 100 for validation + testing
 test_transforms = Compose([ToTensor(), ReImgChannels()])
