@@ -1,4 +1,4 @@
-# Influence of MR Coil Design on Deep-learning-based MR Image Reconstruction
+# Effect of MR Coil Geometry on Deep-learning-based MR Image Reconstruction
 
 ## Abstract
 **Purpose:** To investigate whether parallel imaging-imposed geometric coil constraints can be relaxed when using a deep learning (DL)-based image reconstruction method as opposed to a traditional non-DL method.
@@ -10,7 +10,7 @@
 **Conclusion:** The DL image reconstruction method produced higher quality images that were more robust to varying coil overlap configurations than CG-SENSE. This suggests that geometric coil design constraints can be relaxed when using DL reconstruction methods.
 
 ## Code
-This repository contains the source code for the following paper: Dubljevic N, Moore S, Lauzon ML, Souza R, Frayne R. Influence of MR coil design on deep-learning-based MR image reconstruction. *Submitted to Magn Reson Med*. 2023.
+This repository contains the source code for the following paper: Dubljevic N, Moore S, Lauzon ML, Souza R, Frayne R. Effect of MR Coil Geometry on Deep-learning-based MR Image Reconstruction. *Submitted to Magn Reson Med*. Sept 30 2023.
 
 The code was developed using Python 3.10.9 and Pytorch 1.13.1. The .yml file can be used to recreate the conda environment used for this project. If there are any questions or suggestions for this repository, please let me know at natalia.dubljevic@ucalgary.ca
 
