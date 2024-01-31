@@ -1,16 +1,16 @@
-# Effect of MR Coil Geometry on Deep-learning-based MR Image Reconstruction
+# Effect of MR Head Coil Geometry on Deep-learning-based MR Image Reconstruction
 
 ## Abstract
 **Purpose:** To investigate whether parallel imaging-imposed geometric coil constraints can be relaxed when using a deep learning (DL)-based image reconstruction method as opposed to a traditional non-DL method.
 
-**Theory and Methods:** Traditional and DL-based MR image reconstruction approaches operate in fundamentally different ways: Traditional methods solve a system of equations derived from the image data whereas DL methods use data/target pairs to learn a generalizable reconstruction model. Two sets of coil profiles were evaluated: 1) idealized and 2) head coil geometries. A DL model is compared to conjugate gradient SENSE (CG-SENSE) through quantitative metrics and visual assessment as coil overlap is increased. 
+**Theory and Methods:** Traditional and DL-based MR image reconstruction approaches operate in fundamentally different ways: Traditional methods solve a system of equations derived from the image data whereas DL methods use data/target pairs to learn a generalizable reconstruction model. Two sets of coil profiles were evaluated: 1) 8-channel and 2) 32-channel geometries. A DL model was compared to conjugate gradient SENSE (CG-SENSE) and L1-wavelet compressed sensing (CS) through quantitative metrics and visual assessment as coil overlap was increased.
 
-**Results:** Experiment 1) As coil overlap increases, there is a significant (*p*<0.001) decrease in all metrics for CG-SENSE, and in most cases for DL. The decrease is most pronounced for CG-SENSE, and the DL model significantly outperforms (*p*<0.001) CG-SENSE for nearly all degree of coil overlap. Visually, coil overlap increases aliasing. Experiment 2) As coil overlap increases, there is a significant (*p*<0.001) decrease in most cases for the majority of metrics with both methods. The decrease is most pronounced for CG-SENSE, and the DL model significantly outperforms CG-SENSE in every case. Visually, coil overlap increases aliasing and noise amplification in CG-SENSE and introduces no clear visual artifacts for the DL model.
+**Results:** Results were generally consistent between experiments. As coil overlap increased, there was a significant (*p* < 0.001) decrease in performance in most cases for all methods. The decrease was most pronounced for CG-SENSE, and the DL models significantly outperformed (*p* < 0.001) their non-DL counterparts in all scenarios. CS showed improved robustness to coil overlap and SNR vs. CG-SENSE, but had quantitatively and visually poorer reconstructions characterized by blurriness as compared to DL. DL showed virtually no change in performance across SNR and very small changes across coil overlap.
 
-**Conclusion:** The DL image reconstruction method produced higher quality images that were more robust to varying coil overlap configurations than CG-SENSE. This suggests that geometric coil design constraints can be relaxed when using DL reconstruction methods.
+**Conclusion:** The DL image reconstruction method produced images that were robust to coil overlap and of higher quality than CG-SENSE and CS. This suggests that geometric coil design constraints can be relaxed when using DL reconstruction methods.
 
 ## Code
-This repository contains the source code for the following paper: Dubljevic N, Moore S, Lauzon ML, Souza R, Frayne R. Effect of MR Coil Geometry on Deep-learning-based MR Image Reconstruction. *Submitted to Magn Reson Med*. Sept 30 2023.
+This repository contains the source code for the following paper: Dubljevic N, Moore S, Lauzon ML, Souza R, Frayne R. Effect of MR Head Coil Geometry on Deep-learning-based MR Image Reconstruction. *Submitted to Magn Reson Med*. Sept 30 2023.
 
 The code was developed using Python 3.10.9 and Pytorch 1.13.1. The .yml file can be used to recreate the conda environment used for this project. If there are any questions or suggestions for this repository, please let me know at natalia.dubljevic@ucalgary.ca
 

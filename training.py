@@ -8,7 +8,7 @@ from torch import nn
 from torch.utils.data import DataLoader
 from torchvision.transforms import ToTensor, Compose
 
-from cascaded_map_branch import CascadedModel
+from cascaded_model import CascadedModel
 from dataset import SliceDataset, ReImgChannels
 from training_utils import EarlyStopper
 
@@ -53,7 +53,7 @@ folder_path = '/home/pasala/Data/12-channel/'
 
 slice_ids = pd.read_csv(folder_path + 'slice_ids_v2.csv')
 slice_ids = slice_ids.loc[((slice_ids['slice'] >= 55) 
-                            & (slice_ids['slice'] <= 200)), :]  # remove first and last 55 for training
+                            & (slice_ids['slice'] <= 201)), :]  # remove first and last 55 for training
 slice_ids_val = slice_ids.loc[((slice_ids['slice'] >= 77) 
                                & (slice_ids['slice'] < 178)), :] # keep only central 100 for validation + testing
 test_transforms = Compose([ToTensor(), ReImgChannels()])
@@ -61,12 +61,12 @@ test_transforms = Compose([ToTensor(), ReImgChannels()])
 # generate datasets
 smaps = glob.glob(f'sensitivity_maps/218_170/{smap_style}/{smap}.npy')
 
-if smap_style == 'circle_ring':
+if smap_style == '8ch_head':
     masks = ['undersampling_masks/218_170/uniform_mask_R=6.npy',
             'undersampling_masks/218_170/uniform_mask_R=8.npy']
 else:
-    masks = ['undersampling_masks/218_170/uniform_mask_R=2.npy',
-            'undersampling_masks/218_170/uniform_mask_R=4.npy']
+    masks = ['undersampling_masks/218_170/uniform_mask_R=8.npy',
+            'undersampling_masks/218_170/uniform_mask_R=10.npy']
 
 train_data = SliceDataset(slice_ids, 'train', smaps, masks, 'nlinv', coils, data_transforms=test_transforms, target_transforms=test_transforms)
 valid_data = SliceDataset(slice_ids_val, 'val', smaps, masks, 'nlinv', coils, data_transforms=test_transforms, target_transforms=test_transforms)
@@ -87,7 +87,6 @@ criterion_mse = nn.MSELoss()
 optimizer = torch.optim.Adam(model.parameters(), lr=lr)
 scheduler = torch.optim.lr_scheduler.MultiStepLR(optimizer, milestones=[30, 100], gamma=0.1)
 early_stopper = EarlyStopper(patience=stopper_patience)
-
 
 best_loss = 1e20
 ### TRAIN LOOP ###

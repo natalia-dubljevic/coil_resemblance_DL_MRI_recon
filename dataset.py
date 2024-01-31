@@ -2,6 +2,7 @@ import numpy as np
 import random
 import torch
 from torch.utils.data import Dataset
+import bart
 
 
 class ReImgChannels(object):
@@ -21,7 +22,8 @@ class ReImgChannels(object):
 
 
 class SliceDataset(Dataset):
-    def __init__(self, data_df, split, smaps, us_masks, target_type, coils, data_transforms=None, target_transforms=None) -> None:
+    def __init__(self, data_df, split, smaps, us_masks, target_type, coils, 
+                 data_transforms=None, target_transforms=None, snr_factor=2) -> None:
         super().__init__()
         '''
         Dataset class for 2D slices 
@@ -41,6 +43,7 @@ class SliceDataset(Dataset):
         self.data_transforms = data_transforms
         self.target_transforms = target_transforms
         self.coils = coils
+        self.snr_factor = snr_factor
 
     def __len__(self):
         return len(self.file_paths)
@@ -48,17 +51,16 @@ class SliceDataset(Dataset):
     def __getitem__(self, idx):
         img_path = self.file_paths[idx]  # recall this is the nicely done reconstruction
         smap_path = random.choice(self.smaps) 
-        us_mask_path = random.choice(self.us_masks)
-
-        target_img = np.load(img_path)  # has size 1, 218, 170. 1 channel image, dims 218 x 170. 
-        if target_img.shape[-1] != 170:
-            diff = int((target_img.shape[-1] - 170) / 2)  # difference per side
-            target_img = target_img[:, :, diff:-diff]
+        # if you're doing uniform, there's only one choice
+        # if it's VDPD, randomly choose one of 50
+        us_mask_path = random.choice(self.us_masks)  
+        target_img = np.load(img_path)  # has size 1, 218, 170 (assumed to be pre-cropped to 218x170)
         smap = np.load(smap_path)  # size channels, h, w 
         mask = np.load(us_mask_path)
         mask = np.repeat(mask[None, :, :], self.coils, axis=0)
 
-        noise = np.random.normal(0, 2/1000, target_img.shape) + 1j * np.random.normal(0, 2/1000, target_img.shape)
+        noise = np.random.normal(0, self.snr_factor / 1000, target_img.shape) + \
+           1j * np.random.normal(0, self.snr_factor / 1000, target_img.shape)
         input_kspace = np.fft.fftshift(np.fft.fft2(np.fft.ifftshift(target_img * smap + noise, axes=(-1, -2))), axes=(-1, -2)) * mask
         input_img = np.fft.fftshift(np.fft.ifft2(np.fft.ifftshift(input_kspace, axes=(-1, -2))), axes=(-1, -2))   # want shape channel h w
 
@@ -89,7 +91,9 @@ class SliceDataset(Dataset):
 
 
 class SliceTestDataset(Dataset):
-    def __init__(self, data_df, split, smaps, us_masks, target_type, channels, data_transforms=None, target_transforms=None, rand='smap', smap_choice=None, mask_choice=None) -> None:
+    def __init__(self, data_df, split, smaps, us_masks, target_type, channels, 
+                 data_transforms=None, target_transforms=None, smap_choice=None, 
+                 mask_choice=None, snr_factor=2, crop=False) -> None:
         super().__init__()
         '''
         Dataset class for 2D test slices. Only difference is now we can choose to set a certain smap or us mask. Also, we find out afterwards
@@ -113,9 +117,10 @@ class SliceTestDataset(Dataset):
         self.target_transforms = target_transforms
         self.channels = channels
 
-        self.rand = rand
-        self.smap_choice = smap_choice
-        self.mask_choice = mask_choice
+        self.snr_factor = snr_factor
+        self.crop = crop
+        if self.crop:
+            self.slice_paths = data_df.loc[data_df['split']==split, 'slice_path'].tolist() 
 
     def __len__(self):
         return len(self.file_paths)
@@ -123,34 +128,34 @@ class SliceTestDataset(Dataset):
     def __getitem__(self, idx):
         img_path = self.file_paths[idx]
         target_img = np.load(img_path) 
+
+        if self.crop:
+            slice_path = self.slice_paths[idx]
+            slice = np.load(slice_path)
+            diff = int((slice.shape[1] - 170) / 2)
+            slice = np.expand_dims(slice, 0)
+            slice = bart.bart(1, 'fftmod 6', slice)
+            slice = slice[:, :, diff : -diff, :]
+
+            target_img = bart.bart(1, 'nlinv', slice)
+
         if target_img.shape[-1] == 170:
-            smaps = self.smaps[0]
+            smap_path = self.smaps[0]
             us_masks = self.us_masks[0]
         elif target_img.shape[-1] == 174:
-            smaps = self.smaps[1]
+            smap_path = self.smaps[1]
             us_masks = self.us_masks[1]
         else:
-            smaps = self.smaps[2]
+            smap_path = self.smaps[2]
             us_masks = self.us_masks[2]
 
-        if self.rand == 'smap':
-            smap_path = random.choice(smaps) 
-            us_mask_path = us_masks[self.mask_choice]
-        elif self.rand == 'smap_mask':
-            smap_path = random.choice(smaps) 
-            us_mask_path = random.choice(us_masks)
-        elif self.rand == 'mask':
-            smap_path = smaps[self.smap_choice]
-            us_mask_path = random.choice(us_masks)
-        else:  # pick everything yourself
-            smap_path = smaps[self.smap_choice]
-            us_mask_path = us_masks[self.mask_choice]
-            
+        us_mask_path = random.choice(us_masks)
         smap = np.load(smap_path)  # size channels, h, w 
+        
         mask = np.load(us_mask_path)
         mask = np.repeat(mask[None, :, :], self.channels, axis=0)
 
-        noise = np.random.normal(0, 2/1000, target_img.shape) + 1j * np.random.normal(0, 2/1000, target_img.shape)
+        noise = np.random.normal(0, self.snr_factor / 1000, target_img.shape) + 1j * np.random.normal(0, self.snr_factor / 1000, target_img.shape)
         input_kspace = np.fft.fftshift(np.fft.fft2(np.fft.ifftshift(target_img * smap + noise, axes=(-1, -2))), axes=(-1, -2)) * mask
         input_img = np.fft.fftshift(np.fft.ifft2(np.fft.ifftshift(input_kspace, axes=(-1, -2))), axes=(-1, -2)) 
 
@@ -177,6 +182,6 @@ class SliceTestDataset(Dataset):
         input_kspace = torch.div(input_kspace, input_max)
         input_max = torch.reshape(input_max, (1, 1, 1))
 
-        return input_img, target_img, smap, input_max, input_kspace, mask, smap_path, us_mask_path, img_path
+        return input_img, target_img, smap, input_max, input_kspace, mask, (smap_path, us_mask_path, img_path)
         
 
