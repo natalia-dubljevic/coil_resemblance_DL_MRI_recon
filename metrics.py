@@ -1,5 +1,9 @@
 import numpy as np
-from skimage.metrics import structural_similarity, peak_signal_noise_ratio, normalized_root_mse
+from skimage.metrics import (
+    structural_similarity,
+    peak_signal_noise_ratio,
+    normalized_root_mse,
+)
 
 
 def SSIM(rec, ref):
@@ -24,7 +28,7 @@ def PSNR(rec, ref):
 
 def phase_metric(rec, ref, return_map=False):
     """
-    Calculate intensity-weighted absolute phase disparity metric for a 
+    Calculate intensity-weighted absolute phase disparity metric for a
     reconstruction / reference pair of slices. Can return the intensity-weighted
     mean, or an intensity-weighted map of values.
     """
@@ -34,16 +38,16 @@ def phase_metric(rec, ref, return_map=False):
         return map * weights / np.max(weights)
     else:
         return np.average(map, weights=weights)
-    
-    
+
+
 def NAE(rec, ref, return_map=False):
     """
-    Calculate the normalized absolute error for a reconstruction / reference 
-    pair of slices. Metric is normalized by mean of reference. Can return the 
+    Calculate the normalized absolute error for a reconstruction / reference
+    pair of slices. Metric is normalized by mean of reference. Can return the
     mean NAE, or a map of values.
     """
     map = np.abs(np.abs(rec) - np.abs(ref)) / np.mean(np.abs(ref)) * 10
     if return_map:
-        return map 
+        return map
     else:
         return np.mean(map)

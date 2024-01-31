@@ -1,6 +1,7 @@
 import numpy as np
 import torch
 
+
 class EarlyStopper:
     def __init__(self, patience=1, min_delta=0):
         self.patience = patience
@@ -17,10 +18,10 @@ class EarlyStopper:
             if self.counter >= self.patience:
                 return True
         return False
-    
-    
+
+
 def load_checkpoint(checkpoint_fpath, model, optimizer):
     checkpoint = torch.load(checkpoint_fpath)
-    model.load_state_dict(checkpoint['model_state_dict'])
-    optimizer.load_state_dict(checkpoint['optimizer_state_dict'])
-    return model, optimizer, checkpoint['epoch'], checkpoint['best_loss']
+    model.load_state_dict(checkpoint["model_state_dict"])
+    optimizer.load_state_dict(checkpoint["optimizer_state_dict"])
+    return model, optimizer, checkpoint["epoch"], checkpoint["best_loss"]
