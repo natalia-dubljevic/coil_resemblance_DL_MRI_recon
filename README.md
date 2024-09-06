@@ -10,7 +10,7 @@
 **Conclusion:** The DL image reconstruction method produced images that were robust to coil overlap and of higher quality than CG-SENSE and CS. This suggests that geometric coil design constraints can be relaxed when using DL reconstruction methods.
 
 ## Code
-This repository contains the source code for the following paper: Dubljevic N, Moore S, Lauzon ML, Souza R, Frayne R. Effect of MR Head Coil Geometry on Deep-learning-based MR Image Reconstruction. *Submitted to Magn Reson Med*. Sept 30 2023.
+This repository contains the source code for the following paper: [Dubljevic N, Moore S, Lauzon ML, Souza R, Frayne R. Effect of MR Head Coil Geometry on Deep-learning-based MR Image Reconstruction](https://onlinelibrary.wiley.com/doi/10.1002/mrm.30130)
 
 The code was developed using Python 3.10.9 and Pytorch 1.13.1. The .yml file can be used to recreate the conda environment used for this project. If there are any questions or suggestions for this repository, please let me know at natalia.dubljevic@ucalgary.ca
 
